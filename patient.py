@@ -1,7 +1,6 @@
-
 import re
 
-from domainExceptions import PharmacyError, ValidationError, DispenseError, InvalidPatientIdError
+from domainExceptions import ValidationError, InvalidPatientIdError
 
 # "PT-" followed by exactly 4 digits
 _PATIENT_ID_PATTERN = re.compile(r"PT-[0-9]{4}")
