@@ -68,7 +68,7 @@ def main():
     try:
         create_schema(conn)
         seed(conn)
-        conn.autocommit()
+        conn.commit()
         for name, total in counts(conn).items():
             print(f"{name:12} {total}")
     finally:
