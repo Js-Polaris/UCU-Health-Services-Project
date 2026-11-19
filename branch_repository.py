@@ -23,14 +23,18 @@ class BranchRepository:
     def get(self, branch_id):
         #Return a Branch, or None if there is no such id
         row = self._conn.execute("Select branch_id, name FROM branch WHERE branch_id = ?", (branch_id,),).fetchone()
-        return self._to_domain(row) if row is not None eslse None
+        return self._to_domain(row) if row is not None eslse None #if a row exits, _to_domain(row) converts it into a Branch object.
         
-    def list_all(self):
-        rows = self.conn.execute("SELECT branch_id, name FROM branch ORDERBY name").fetchall()
-            return [self._to_domain(row) for row in rows]
+    def list_all(self): #retrieve all the branches stored in the database.
+        rows = self._conn.execute("SELECT branch_id, name FROM branch ORDERBY name"
+        ).fetchall() #We are asking our database connection to execute an SQL command
+        #FROM branch - get the information from the branch table.
+        #ORDER BY name - arrange the results alphabetically according to branch name.
+        #fetchall()-Retrieves all matching rowa.
+        return [self._to_domain(row) for row in rows] # short way of creating a list:using a loop
 
     @staticmethod 
-    def _to_domain(row):
+    def _to_domain(row): #convert database information into a domain object
         #the branch table has no is_main column, so it defaults to False.
         #Add that coulumn to the schema if the UI needs to show "Main"
         return Branch(branch_id = row["branch_id"],name=row["name"])
