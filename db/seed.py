@@ -3,8 +3,8 @@ BRANCHES = [(101, "Mukono"),(102, "Kampala"), (103, "Kabale"),]
 MEDICINES = [("MED-001", "Paracetamol", 500, 20, "ordinary"),
              ("MED-002", "Amoxicillin", 1200, 15, "ordinary"),
              ("MED-003", "Oral Rehydration Salts", 800, 30, "ordinary"),
-             ("MED-005", "Pethidine", 15000, 3,"controlled"),
-             ("MED-006", "Amitriptyline", 9000, 5, "controlled")]###digit one is the unit_price and digit two is the reorder_level
+             ("MED-004", "Pethidine", 15000, 3,"controlled"),
+             ("MED-005", "Amitriptyline", 9000, 5, "controlled")]###digit one is the unit_price and digit two is the reorder_level
 PATIENTS = [
     ("PT-0001", "Kyaligonza Toyota"),
     ("PT-0002", "Hyundai Deare"),
@@ -32,31 +32,36 @@ STOCK= [(101, "MED-001", 120),
 TABLES = {
     "branch" : "branch",
     "medicine": "medicine",
-    "patient" : "patients",
+    "patient" : "patient",
     "prescriber" :"prescriber",
     "stock" : "stock",
 }
 ##Inserts the respective classes
 def seed(conn):
-    ##insert the fictional data
+    """Insert all fictional data. Does not commit -- the caller decides."""
+    conn.executemany(
+        "INSERT OR IGNORE INTO branch (branch_id, name) VALUES (?, ?)",
+        BRANCHES,
+    )
     conn.executemany(
         """INSERT OR IGNORE INTO medicine
-        (code, name, unit_price, reorder_level, category)
-        VALUES (?, ?, ?, ?, ?)""", 
-        MEDICINES
+           (code, name, unit_price, reorder_level, category)
+           VALUES (?, ?, ?, ?, ?)""",
+        MEDICINES,
     )
     conn.executemany(
-        "INSERT OR IGNORE patient (patient_id, label) VALUES (?,?)", 
-        PATIENTS
+        "INSERT OR IGNORE INTO patient (patient_id, label) VALUES (?, ?)",
+        PATIENTS,
     )
     conn.executemany(
-        "INSERT OR IGNORE patient (code) VALUES (?)", 
+        "INSERT OR IGNORE INTO prescriber (code) VALUES (?)",
         [(code,) for code in PRESCRIBERS],
     )
-    ##Stock last: using the foreign keys above to exist
+    # Stock last: its foreign keys need the rows above to exist.
     conn.executemany(
-        """INSERT OR IGNORE INTO stock (branch_id, medicine_id, quantity) VALUES (?,?,?)""",
-        STOCK
+        """INSERT OR IGNORE INTO stock (branch_id, medicine_code, quantity)
+           VALUES (?, ?, ?)""",
+        STOCK,
     )
     ##it has the foreign keys to medicine and branch. It takes an injected connection and deosn't commit
 
