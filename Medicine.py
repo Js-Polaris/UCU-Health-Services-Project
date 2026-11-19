@@ -10,11 +10,13 @@ class Medicine(ABC):
         self.unit_price = unit_price
         self.reorder_level = reorder_level
 
+    @staticmethod
     def _validate_code(code):
         #must be text and not empty or only spaces
         if not isinstance(code, str) or not code.strip():
             raise ValidationError("Medicine code is required")
         #.strip() removes spaces, and upper() ensures things are in uppercase
+        return code.strip().upper()
 
     @staticmethod
     def _to_whole_number(value):
@@ -79,7 +81,7 @@ class Medicine(ABC):
         """ ordinary or controlled""" 
 
     @abstractmethod
-    def requires_authoristion(self):
+    def requires_authorisation(self):
         """ True if a prescriber check is needed"""
 
     @abstractmethod
