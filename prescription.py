@@ -17,6 +17,7 @@ class InvalidStatusTransitionError(DispenseError):
     """A dispense or cancel cannot be completed because the prescription is
     not in the correct status."""
 
+
 class PrescriptionStatus(Enum):
     """The closed set of valid statuses"""
     PENDING = "pending"
@@ -25,7 +26,7 @@ class PrescriptionStatus(Enum):
 
 
 class PrescriptionLine:
-    """One medicine and quantity on a prescription (INV-10)."""
+    """One medicine and quantity on a prescription"""
     def __init__(self, medicine_code, quantity):        
         if (not isinstance(quantity, int) or isinstance(quantity, bool)
                 or quantity <= 0):
@@ -34,7 +35,8 @@ class PrescriptionLine:
             raise ValidationError("Select a medicine for the line.")
         self._medicine_code = medicine_code
         self._quantity = quantity
-
+        
+    #medicine_code and quantity are read-only, so the repository can set them only via the constructor
     @property
     def medicine_code(self):
         return self._medicine_code
@@ -67,7 +69,7 @@ class Prescription:
         self._created_at = created_at                
         self._lines = []
 
-        # Checked directly (not via add_line) so a dispensed or cancelled
+        # this will raise a ValidationError if any line is invalid or duplicated
         for line in lines:
             self._check_new_line(line)
             self._lines.append(line)
@@ -90,11 +92,11 @@ class Prescription:
         return self._prescriber_code
 
     @property
-    def status(self):
+    def status(self):  
         return self._status
 
     @property
-    def created_at(self):
+    def created_at(self):  
         return self._created_at
 
     @property
@@ -116,7 +118,6 @@ class Prescription:
         self._lines.append(line)
 
     def mark_dispensed(self):
-        """pending -> dispensed only (INV-12)."""
         if self._status is PrescriptionStatus.DISPENSED:
             raise InvalidStatusTransitionError("Prescription is already dispensed.")
         if self._status is PrescriptionStatus.CANCELLED:
@@ -125,7 +126,6 @@ class Prescription:
         self._status = PrescriptionStatus.DISPENSED
 
     def cancel(self):
-        """pending -> cancelled only (INV-12)."""
         if self._status is PrescriptionStatus.DISPENSED:
             raise InvalidStatusTransitionError(
                 "A dispensed prescription cannot be cancelled.")
@@ -140,8 +140,7 @@ class Prescription:
             raise ValidationError("Medicine already added to this prescription.")
 
     @staticmethod
-    def _clean_code(code):
-        """A1: blank prescriber code is allowed (stored as None)."""
+    def _clean_code(code): #this is used to  clean up the prescriber code, which is optional, so that empty strings are converted to None
         if code is None:
             return None
         code = str(code).strip()
