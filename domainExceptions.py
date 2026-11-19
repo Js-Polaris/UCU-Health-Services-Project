@@ -4,42 +4,22 @@ class PharmarcyError(Exception): #This is the base class for all exceptions we a
         super().__init__(self.message)
 
 class DispenseError(PharmarcyError):
-    def __init__(self, message):
-        self.message = message
-        super(). __init__(self.message)
-
+    pass
 class ValidationError(PharmarcyError):
-    def __init__(self, message):
-        self.message = message
-        super(). __init__(self.message)
+    pass
 class InvalidPriceError(ValidationError):
-    def __init__(self, message):
-        self.message = message
-        super(). __init__(self.message)
+    pass
 class InvalidReorderError(ValidationError):
-    def __init__(self, message):
-        self.message = message
-        super(). __init__(self.message)
+    pass
 class DuplicatePatientError(ValidationError):
-    def __init__(self, message):
-        self.message = message
-        super(). __init__(self.message)
+    pass
 class UnknownPatientError(ValidationError):
-    def __init__(self, message):
-        self.message = message
-        super(). __init__(self.message)
+    pass
 class UnauthorizedPrescriberError(DispenseError):
-    def __init__(self, message):
-        self.message = message
-        super(). __init__(self.message)
+    pass
 class InsufficientStockError(DispenseError):
-    def __init__(self, message):
-        self.message = message
-        super(). __init__(self.message)
+    pass
 class InvalidStatusTransitionError(PharmarcyError):
-    def __init__(self, message):
-        self.message = message
-        super(). __init__(self.message)
-
+    pass
         
 
