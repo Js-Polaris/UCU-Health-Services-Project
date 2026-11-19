@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().patent.parent / "health.db"
+DB_PATH = Path(__file__).resolve().parent.parent / "health.db"
 SCHEMA_PATH = Path(__file__).resolve().parent /"schema.sql"
 def connect(db_path =None):
     ##Poening a connection with the foreign keys enabled andnamed row while 
