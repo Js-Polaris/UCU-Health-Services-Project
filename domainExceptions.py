@@ -19,7 +19,10 @@ class UnauthorizedPrescriberError(DispenseError):
     pass
 class InsufficientStockError(DispenseError):
     pass
-class InvalidStatusTransitionError(PharmarcyError):
+class InvalidStatusTransitionError(DispenseError):
     pass
-        
+class DuplicatePatientIdError(ValidationError):
+    pass
+class InvalidPatientIdError(ValidationError):
+    pass 
 
