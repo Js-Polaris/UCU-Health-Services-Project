@@ -1,5 +1,3 @@
--- UCU Health Services schema (Milestone 1 Section 8).
--- Loaded by db/connection.py users; foreign keys are enabled on the connection.
 
 CREATE TABLE IF NOT EXISTS medicine (
     code          TEXT PRIMARY KEY NOT NULL,
