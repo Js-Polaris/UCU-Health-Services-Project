@@ -1,3 +1,4 @@
+#Takes an open sqlite3 connection. the connection helper must run PRAGMA foreign keys = ON
 import sqlite3
 from patient import Patient
 from domainExceptions import DuplicatePatientError, UnknownPatientError
@@ -15,6 +16,7 @@ class PatientRepository:
         self._conn = connection
 
     def add(self, patient):
+        #save new patient. Raises duplicatepatienterror if the id exists
         try:
             with self._conn:
                 self._conn.execute(
@@ -24,6 +26,7 @@ class PatientRepository:
             raise DuplicatePatientError("Patient ID already exists") from None
 
     def get(self, patient_id):
+        #return the patient, or raise unknownpatienterror
         row = self._conn.execute(
             (patient_id,),).fetchone()
         if row is None:
@@ -37,12 +40,14 @@ class PatientRepository:
         return row is not None
 
     def list(self):
+        #all patients, ordered by ID
         rows = self._conn.execute(
             "SELECT patient_id, label FROM patient ORDER BY patient_id"
         ).fetchall()
         return [Patient(row[0], row[1]) for row in rows]
 
     def  save(self, patient):
+        #update the label of an existing patient (id never changes)
         with self._conn:
             cur = self._conn.execute(
                 "UPDATE patient SET label = ? WHERE patient_id = ?",
