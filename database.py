@@ -1,5 +1,21 @@
 import sqlite3
 
+from db.connection import DB_PATH, connect, create_schema
+
+def main():
+    conn = connect()
+    try:
+        create_schema(conn)
+        conn.commit()
+    finally:
+        conn.close()
+    print(f"Schema ready in {DB_PATH}")
+
+
+if __name__ == "__main__":
+    main()
+
+
 conn = sqlite3.connect("health.db")
 cur = conn.cursor()
 

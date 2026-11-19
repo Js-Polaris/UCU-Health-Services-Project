@@ -1,23 +1,11 @@
-# enum and exception classes for the pharmacy domain.
 from enum import Enum
 
-
-class PharmacyError(Exception):
-    '''Base class for all pharmacy errors.'''
-
-
-class ValidationError(PharmacyError):
-    '''A validation error on a prescription or line.'''
-
-
-class DispenseError(PharmacyError):
-     '''A dispense or cancel cannot be completed.'''
-
-class InvalidStatusTransitionError(DispenseError):
-    """A dispense or cancel cannot be completed because the prescription is
-    not in the correct status."""
-
-
+from domainExceptions import (   
+    ValidationError,             
+    DispenseError,               
+    InvalidStatusTransitionError,
+)     
+                           
 class PrescriptionStatus(Enum):
     """The closed set of valid statuses"""
     PENDING = "pending"
@@ -27,6 +15,7 @@ class PrescriptionStatus(Enum):
 
 class PrescriptionLine:
     """One medicine and quantity on a prescription"""
+    
     def __init__(self, medicine_code, quantity):        
         if (not isinstance(quantity, int) or isinstance(quantity, bool)
                 or quantity <= 0):
