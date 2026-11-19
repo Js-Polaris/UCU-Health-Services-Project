@@ -1,11 +1,11 @@
-class PharmarcyError(Exception): #This is the base class for all exceptions we are going to work with.
+class PharmacyError(Exception): #This is the base class for all exceptions we are going to work with.
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
 
-class DispenseError(PharmarcyError):
+class DispenseError(PharmacyError):
     pass
-class ValidationError(PharmarcyError):
+class ValidationError(PharmacyError):
     pass
 class InvalidPriceError(ValidationError):
     pass
@@ -25,4 +25,10 @@ class DuplicatePatientIdError(ValidationError):
     pass
 class InvalidPatientIdError(ValidationError):
     pass 
+
+class DuplicateCodeError(ValidationError):
+    pass
+
+class DuplicateBranchError(ValidationError):
+    pass
 
