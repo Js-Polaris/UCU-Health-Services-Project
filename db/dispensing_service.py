@@ -13,7 +13,7 @@ from prescription import PrescriptionStatus
 from prescription_repository import MedicineRepository
 from prescriber_repository import PrescriberRepository
 from prescription_repository import PrescriptionRepository
-from repositories.stock_repository import StockRepository
+from stock_repository import StockRepository
 
 class DispensingService:
     def __init__(self, conn):

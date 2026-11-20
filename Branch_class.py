@@ -1,6 +1,3 @@
-"""Branch domain class and the simulated prescriber allow-list."""
-
-
 from domainExceptions import InvalidNameError, ValidationError
 
 
