@@ -14,7 +14,7 @@ def connect(db_path =None):
     return conn
 def create_schema(conn):
     ##Creates all the seven tables on the given connection
-    with open(SCHEMA_PATH, encoding= "utf-8") as fh:
+    with open(SCHEMA_PATH, encoding="utf-8") as fh:
         conn.executescript(fh.read())
 
 ##parent.parent is my repo root. Our db lives in health.db
