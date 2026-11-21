@@ -11,6 +11,9 @@ class InvalidPriceError(ValidationError):
     pass
 class InvalidReorderError(ValidationError):
     pass
+
+# Compatibility alias: some group files use the longer spelling.
+InvalidReorderLevelError = InvalidReorderError
 class DuplicatePatientError(ValidationError):
     pass
 class UnknownPatientError(ValidationError):
@@ -30,5 +33,13 @@ class DuplicateCodeError(ValidationError):
     pass
 
 class DuplicateBranchError(ValidationError):
+    pass
+
+# Used by Branch.name (PrescriberAllowList.py) and StockRepository.add().
+class InvalidNameError(ValidationError):
+    pass
+
+
+class DuplicateStockError(ValidationError):
     pass
 
