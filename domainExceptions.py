@@ -35,3 +35,11 @@ class DuplicateCodeError(ValidationError):
 class DuplicateBranchError(ValidationError):
     pass
 
+# Used by Branch.name (PrescriberAllowList.py) and StockRepository.add().
+class InvalidNameError(ValidationError):
+    pass
+
+
+class DuplicateStockError(ValidationError):
+    pass
+
