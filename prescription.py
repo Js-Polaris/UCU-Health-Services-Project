@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum # this imports the Enum class from the enum module, which is used to create enumerations in Python
 
 from domainExceptions import (   
     ValidationError,             

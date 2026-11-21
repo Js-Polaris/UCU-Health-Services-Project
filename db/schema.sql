@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS medicine (
     code          TEXT PRIMARY KEY NOT NULL,
     name          TEXT NOT NULL,
