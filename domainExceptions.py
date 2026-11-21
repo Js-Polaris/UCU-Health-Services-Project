@@ -11,6 +11,9 @@ class InvalidPriceError(ValidationError):
     pass
 class InvalidReorderError(ValidationError):
     pass
+
+# Compatibility alias: some group files use the longer spelling.
+InvalidReorderLevelError = InvalidReorderError
 class DuplicatePatientError(ValidationError):
     pass
 class UnknownPatientError(ValidationError):
