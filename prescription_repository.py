@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3 # this imports sql library for database operations
 
 from domainExceptions import ValidationError
 from prescription import Prescription, PrescriptionLine, PrescriptionStatus
