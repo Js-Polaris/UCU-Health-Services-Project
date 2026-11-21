@@ -1,14 +1,28 @@
-import sqlite3 
+"""All SQL for prescription and prescription_line lives in this file.
+
+Fix reference: this is Samuel's repository moved from the repo root into the
+`repositories/` package (where all the other repositories live). The SQL and
+logic were already correct; only the location needed changing so DispensingService
+can import `repositories.prescription_repository`.
+
+A prescription is one parent row plus one or more line rows. Loading it means
+rebuilding the full object graph, including converting the status string back
+into a PrescriptionStatus enum member. The connection is injected and this
+repository never commits or rolls back.
+"""
+
+import sqlite3
 
 from domainExceptions import ValidationError
 from prescription import Prescription, PrescriptionLine, PrescriptionStatus
 
 
-class PrescriptionRepository:# a repository class for managing prescriptions in the database
+class PrescriptionRepository:
     def __init__(self, conn):
         self._conn = conn
 
     def add(self, prescription):
+        """Insert the parent and all its lines. Caller owns commit/rollback."""
         if prescription.prescription_id is not None:
             raise ValidationError("Prescription already has an identifier.")
 
@@ -26,7 +40,7 @@ class PrescriptionRepository:# a repository class for managing prescriptions in 
             self._translate(exc)
 
         prescription_id = cursor.lastrowid
-        for line in prescription.lines: # save each line in the prescription_line table
+        for line in prescription.lines:
             try:
                 self._conn.execute(
                     """INSERT INTO prescription_line
@@ -37,9 +51,11 @@ class PrescriptionRepository:# a repository class for managing prescriptions in 
             except sqlite3.IntegrityError as exc:
                 self._translate(exc)
 
+        # The domain class exposes assign_id() precisely for this moment.
         prescription.assign_id(prescription_id)
 
-    def get(self, prescription_id):# returns a Prescription object for the given prescription_id, or None if not found
+    def get(self, prescription_id):
+        """Return a fully rebuilt Prescription, or None."""
         row = self._conn.execute(
             """SELECT prescription_id, patient_id, branch_id, prescriber_code,
                       status, created_at
@@ -48,7 +64,7 @@ class PrescriptionRepository:# a repository class for managing prescriptions in 
         ).fetchone()
         return self._to_domain(row) if row is not None else None
 
-    def list_all(self):# returns a list of all prescriptions, ordered by prescription_id descending
+    def list_all(self):
         rows = self._conn.execute(
             """SELECT prescription_id, patient_id, branch_id, prescriber_code,
                       status, created_at
@@ -56,7 +72,8 @@ class PrescriptionRepository:# a repository class for managing prescriptions in 
         ).fetchall()
         return [self._to_domain(row) for row in rows]
 
-    def list_pending(self):# returns a list of all pending prescriptions, ordered by prescription_id descending
+    def list_pending(self):
+        """Screen 5: the prescriptions a pharmacist may dispense."""
         rows = self._conn.execute(
             """SELECT prescription_id, patient_id, branch_id, prescriber_code,
                       status, created_at
@@ -65,7 +82,8 @@ class PrescriptionRepository:# a repository class for managing prescriptions in 
         ).fetchall()
         return [self._to_domain(row) for row in rows]
 
-    def save_status(self, prescription): # updates the status of an existing prescription in the database
+    def save_status(self, prescription):
+        """Write status back after mark_dispensed() or cancel()."""
         cursor = self._conn.execute(
             "UPDATE prescription SET status = ? WHERE prescription_id = ?",
             (prescription.status.value, prescription.prescription_id),
@@ -73,7 +91,7 @@ class PrescriptionRepository:# a repository class for managing prescriptions in 
         if cursor.rowcount == 0:
             raise ValidationError("Prescription not found.")
 
-    def _to_domain(self, row): #translates a database row into a domain Prescription object, including its lines
+    def _to_domain(self, row):
         line_rows = self._conn.execute(
             """SELECT medicine_code, quantity FROM prescription_line
                WHERE prescription_id = ? ORDER BY medicine_code""",
@@ -93,7 +111,8 @@ class PrescriptionRepository:# a repository class for managing prescriptions in 
         )
 
     @staticmethod
-    def _translate(exc):# the following method translates database integrity errors into domain validation errors
+    def _translate(exc):
+        """Turn a raw sqlite3 error into one of our exceptions."""
         message = str(exc).upper()
         if "FOREIGN KEY" in message:
             raise ValidationError(

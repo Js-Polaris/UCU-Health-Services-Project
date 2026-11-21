@@ -1,31 +1,45 @@
-from enum import Enum # this imports the Enum class from the enum module, which is used to create enumerations in Python
+"""Prescription domain objects (from Samuel's branch, with code fixes).
 
-from domainExceptions import (   
-    ValidationError,             
-    DispenseError,               
+Fix reference:
+  * PrescriptionLine now stores medicine codes stripped and UPPERCASED, so
+    they match the `medicine.code` primary key and the stock table's
+    `medicine_code` column.
+  * Prescription._clean_code() now calls .upper(). The prescriber table
+    stores codes like 'DR-001', so a lowercase entry would fail the FK.
+  * Otherwise identical to Samuel's version -- status rules, line rules and
+    the public API are unchanged.
+"""
+
+from enum import Enum
+
+from domainExceptions import (
+    ValidationError,
+    DispenseError,
     InvalidStatusTransitionError,
-)     
-                           
+)
+
+
 class PrescriptionStatus(Enum):
-    """The closed set of valid statuses"""
+    """The closed set of valid statuses."""
+
     PENDING = "pending"
     DISPENSED = "dispensed"
     CANCELLED = "cancelled"
 
 
 class PrescriptionLine:
-    """One medicine and quantity on a prescription"""
-    
-    def __init__(self, medicine_code, quantity):        
+    """One medicine and quantity on a prescription."""
+
+    def __init__(self, medicine_code, quantity):
         if (not isinstance(quantity, int) or isinstance(quantity, bool)
                 or quantity <= 0):
             raise ValidationError("Line quantity must be a positive whole number.")
-        if medicine_code is None or str(medicine_code).strip() == "":
+        if medicine_code is None or not str(medicine_code).strip():
             raise ValidationError("Select a medicine for the line.")
-        self._medicine_code = medicine_code
+        self._medicine_code = str(medicine_code).strip().upper()
         self._quantity = quantity
-        
-    #medicine_code and quantity are read-only, so the repository can set them only via the constructor
+
+    # Read-only: the repository sets these only through the constructor.
     @property
     def medicine_code(self):
         return self._medicine_code
@@ -50,20 +64,20 @@ class Prescription:
         if not lines:
             raise ValidationError("Add at least one medicine line.")
 
-        self._prescription_id = prescription_id      
+        self._prescription_id = prescription_id
         self._patient_id = patient_id
         self._branch_id = branch_id
         self._prescriber_code = self._clean_code(prescriber_code)
-        self._status = PrescriptionStatus(status)    
-        self._created_at = created_at                
+        self._status = PrescriptionStatus(status)
+        self._created_at = created_at
         self._lines = []
 
-        # this will raise a ValidationError if any line is invalid or duplicated
+        # Raises ValidationError if any line is invalid or duplicated.
         for line in lines:
             self._check_new_line(line)
             self._lines.append(line)
-            
-    # the following properties are read-only, so the repository can set them only via the constructor or assign_id()
+
+    # These are read-only; the repository uses the constructor / assign_id().
     @property
     def prescription_id(self):
         return self._prescription_id
@@ -81,18 +95,17 @@ class Prescription:
         return self._prescriber_code
 
     @property
-    def status(self):  
+    def status(self):
         return self._status
 
     @property
-    def created_at(self):  
+    def created_at(self):
         return self._created_at
 
     @property
     def lines(self):
-        return list(self._lines)   # a copy, so callers cannot edit the list
+        return list(self._lines)  # a copy, so callers cannot edit the list
 
-#the following methods are called by the repository to update the prescription after it has been saved to the database
     def assign_id(self, prescription_id):
         """Called once by the repository after the INSERT."""
         if self._prescription_id is not None:
@@ -129,10 +142,13 @@ class Prescription:
             raise ValidationError("Medicine already added to this prescription.")
 
     @staticmethod
-    def _clean_code(code): #this is used to  clean up the prescriber code, which is optional, so that empty strings are converted to None
+    def _clean_code(code):
+        """Optional prescriber code: blanks become None."""
         if code is None:
             return None
-        code = str(code).strip()
+        # Match PrescriberAllowList, which stores codes stripped and uppercased,
+        # so the FK to prescriber(code) resolves.
+        code = str(code).strip().upper()
         return code or None
 
     def __repr__(self):
