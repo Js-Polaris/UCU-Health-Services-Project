@@ -1,4 +1,4 @@
-"""Service for Screen S3: Receive Stock (owner: Abi).
+"""Service for Screen S3.
 
 Available methods for the View:
   receive(branch_id, medicine_code, quantity) -> add stock, creating the
