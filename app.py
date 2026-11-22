@@ -26,7 +26,7 @@ from views.s6_low_stock import LowStockView
 from views.s7_register_patient import RegisterPatientView
 
 
-# (tab label, View class) -- the single place that registers all 7 screens.
+#for all our seven screens
 TABS = [
     ("S1 Register Medicine", RegisterMedicineView),
     ("S2 Manage Branches", ManageBranchesView),
@@ -36,12 +36,10 @@ TABS = [
     ("S6 Low Stock Report", LowStockView),
     ("S7 Register Patient", RegisterPatientView),
 ]
-
-
 def main():
     # One connection, with PRAGMA foreign_keys = ON from db.connection.connect().
     conn = connect()
-    try:
+    try: ##since every member's firt run has data. Re-running is safe.
         create_schema(conn)
         seed(conn)          # INSERT OR IGNORE: safe on every startup
         conn.commit()
