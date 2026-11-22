@@ -30,7 +30,10 @@ class StockService:
         except Exception:
             self._conn.rollback()
             raise
-
+    def list_low_stock(self, branch_id):
+        """Return a list of stock items at or below their reorder level."""
+        return self._stock.list_low_stock(int(branch_id))
+    
     def list_for_branch(self, branch_id):
         return self._stock.list_for_branch(int(branch_id))
 

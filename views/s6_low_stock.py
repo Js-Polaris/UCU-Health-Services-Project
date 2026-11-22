@@ -6,7 +6,7 @@ READ-ONLY screen: pick a branch, see medicines whose quantity is at or below
 their reorder level. No forms to submit, no save buttons, no transactions.
 
 MVT rules followed:
-  * No SQL here -- LowStockService gathers the data.
+  * No SQL here -- StockService gathers the data.
   * No business rules here -- StockItem.is_low() decides.
   * Errors are shown exactly as received: show_error(str(exc)).
 """
@@ -14,7 +14,8 @@ MVT rules followed:
 import tkinter as tk
 from tkinter import ttk
 
-from services.stock_service import LowStockService
+from services.branch_service import BranchService
+from services.stock_service import StockService
 from templates.layouts import (
     form_section, make_expandable, screen_title, table_section,
 )
@@ -26,10 +27,11 @@ from templates.widgets import (
 class LowStockView(ttk.Frame):
     def __init__(self, parent, conn):
         super().__init__(parent, padding=4)
-        self._service = LowStockService(conn)
+        self.branch_service = BranchService(conn)
+        self._service = StockService(conn)
         self._branch_options = {
             f"{b.branch_id} - {b.name}": b.branch_id
-            for b in self._service.list_branches()
+            for b in self.branch_service.list_all()
         }
         self._branch_var = tk.StringVar()
 
