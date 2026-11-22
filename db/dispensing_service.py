@@ -99,6 +99,24 @@ class DispensingService:
         self._prescriptions.save_status(prescription)
         return prescription
 
+    def cancel(self, prescription_id):
+        """Cancel a pending prescription (Screen S5).
+
+        Uses the same transaction boundary as dispense(): one commit on
+        success, one rollback on any failure. Samuel's S5 View calls this.
+        """
+        try:
+            prescription = self._prescriptions.get(prescription_id)
+            if prescription is None:
+                raise ValidationError("Prescription not found.")
+            prescription.cancel()
+            self._prescriptions.save_status(prescription)
+        except Exception:
+            self._conn.rollback()
+            raise
+        self._conn.commit()
+        return prescription
+
     def _build_allow_list(self):
         """Load the authorised prescriber codes from the database."""
         allow_list = PrescriberAllowList()
