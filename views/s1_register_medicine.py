@@ -1,4 +1,4 @@
-"""Screen S1: Register Medicine (fully implemented as the group example).
+"""Screen S1: Register Medicine.
 
 Shows the complete View pattern:
   1. __init__(parent, conn) receives the ONE shared connection.
