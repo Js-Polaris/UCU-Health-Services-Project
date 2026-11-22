@@ -60,7 +60,19 @@ class StockRepository:
                FROM stock ORDER BY branch_id, medicine_code"""
         ).fetchall()
         return [self._to_domain(row) for row in rows]
-
+    
+    def list_low_stock(self, branch_id):
+        """Return a list of stock items at or below their reorder level."""
+        rows = self._conn.execute(
+            """SELECT s.branch_id, s.medicine_code, s.quantity
+               FROM stock s
+               JOIN medicine m ON s.medicine_code = m.code
+               WHERE s.branch_id = ? AND s.quantity <= m.reorder_level
+               ORDER BY s.medicine_code""",
+            (branch_id,),
+        ).fetchall()
+        return [self._to_domain(row) for row in rows]
+    
     def save(self, item):
         """Write the in-memory quantity back after receive()/remove().
 
