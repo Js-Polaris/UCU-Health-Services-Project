@@ -28,13 +28,13 @@ from views.s7_register_patient import RegisterPatientView
 
 #for all our seven screens
 TABS = [
-    ("S1 Register Medicine", RegisterMedicineView),
-    ("S2 Manage Branches", ManageBranchesView),
-    ("S3 Receive Stock", ReceiveStockView),
-    ("S4 Create Prescription", CreatePrescriptionView),
-    ("S5 Dispense / Cancel", DispenseCancelView),
-    ("S6 Low Stock Report", LowStockView),
-    ("S7 Register Patient", RegisterPatientView),
+    ("Register Medicine", RegisterMedicineView),
+    ("Manage Branches", ManageBranchesView),
+    ("Receive Stock", ReceiveStockView),
+    ("Create Prescription", CreatePrescriptionView),
+    ("Dispense / Cancel", DispenseCancelView),
+    ("Low Stock Report", LowStockView),
+    ("Register Patient", RegisterPatientView),
 ]
 def main():
     # One connection, with PRAGMA foreign_keys = ON from db.connection.connect().
