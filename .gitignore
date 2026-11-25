@@ -1,0 +1,6 @@
+# Generated database (fictional test data - recreated by python -m db.seed)
+health.db
+
+# Python bytecode caches (these were accidentally committed on main)
+__pycache__/
+*.py[cod]

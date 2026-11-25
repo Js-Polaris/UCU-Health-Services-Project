@@ -1,0 +1,45 @@
+class PharmacyError(Exception): #This is the base class for all exceptions we are going to work with.
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+class DispenseError(PharmacyError):
+    pass
+class ValidationError(PharmacyError):
+    pass
+class InvalidPriceError(ValidationError):
+    pass
+class InvalidReorderError(ValidationError):
+    pass
+
+# Compatibility alias: some group files use the longer spelling.
+InvalidReorderLevelError = InvalidReorderError
+class DuplicatePatientError(ValidationError):
+    pass
+class UnknownPatientError(ValidationError):
+    pass
+class UnauthorizedPrescriberError(DispenseError):
+    pass
+class InsufficientStockError(DispenseError):
+    pass
+class InvalidStatusTransitionError(DispenseError):
+    pass
+class DuplicatePatientIdError(ValidationError):
+    pass
+class InvalidPatientIdError(ValidationError):
+    pass 
+
+class DuplicateCodeError(ValidationError):
+    pass
+
+class DuplicateBranchError(ValidationError):
+    pass
+
+# Used by Branch.name (PrescriberAllowList.py) and StockRepository.add().
+class InvalidNameError(ValidationError):
+    pass
+
+
+class DuplicateStockError(ValidationError):
+    pass
+
